@@ -1,0 +1,151 @@
+Ruby on Rails - setup and start
+
+Windows - user Rails Installer from the http://railsinstaller.org/en
+Bundle ukljucuje sve komponente (Ruby, Ralis, Bundler, Git, SQLite,..)
+Instalira se dvoklikom i jedino sto je na kraju instalcije potrebno je da se
+unese korisnicko ime (ime.prezime) kao i email adresa.
+Nakon instalcije provera verzija Ruby-ja i Rails-a iz komandne linije:
+
+-----------
+ruby -v		<- provera verzije ruby-ja
+rails -v	<- provera verzije rails-a
+-----------
+
+Nakon instalacije, kreida se direktorijum na disku na kome ce biti skladisteni sajtovi,
+ako nista nije menjano, putanja je: c:\Sites
+
+Unutar sites direktorijuma kreiramo novi direktorijum koji cemo nazvati rails_projects
+i kreiramo prvu aplikaciju:
+
+----------------------
+mkdir rails_projects
+cd rails_projects
+rails new first_app		<- kreiranje rails projekta sa zeljenim imenom
+----------------------
+poslednja komanda ce kreirati novu aplikaciju sa celokupnom podstrukturom
+direktorijuma ispod.
+
+app/			Core app kod, ukljucujuci modele, view-e, kontrolere i helpere
+app/assets		asset-i poput CSS-a, JS fajlova i slika
+config/			konfiguracija aplikacije
+db/				fajlovi vezani za bazu podataka
+doc/			dokumentacija aplikacije
+lib/			moduli biblioteka
+lib/assets		bibliotecki asset-i poput CSS-a, JS-a i slika
+log/			aplikacioni logovi
+public/			podaci koji su javno dostupni (za web browser-e) kao sto su strane sa greskama (Error pages)
+script/rails	skript za generisanje koda, otvaranje konzolnih sesija ili startovanje lokalnog servera
+test/			aplikacioni testovi
+tmp/			privremeni fajlovi
+vendor/			third-party kod kao sto su plugin-i i gem-ovi
+vendor/assets	third-party asset-i kao sto su CSS, JS i slike
+README.rdoc		kratak opis aplikacije
+Rakefile		utility zadaci dostupni preko rake komande
+Gemfile			Gem-ovi potrebni za rad aplikacije
+Gemfile.lock	lista gem-ova koja obezbedjuje da sve kopije aplikacije koriste iste verzije Gem-ova
+config.ru		konfiguacioni fajl Rack middleware-a
+.gitinore		Paterni za fajlove koji ce biti ignotisani od strane git-a (nece biti versionisani)
+
+
+Uz instalciju dolazi i lokalni web server koji ce se koristiti za nase aplikacije
+Server se startuje komandom:
+-----------
+rails server	<- startovanje lokalnog web servera
+-----------
+
+iz browser-a sajtu pristupamo preko: http://localhost:3000
+
+Ruby on Rails se u potpunosti oslanja na MVC pattern.
+
+-----------------
+- GIT osnove	-
+-----------------
+
+GIT version control system se instalira uz bundle. Kada smo kreirali projekat
+koji hocemo da verzionisemo i cuvamo source control-om, moramo prvo da inicijalizujemo
+git. Najpre se pozicioniramo u root nase aplikacije i unesemo komandu:
+-----------
+git init	<- inicijalizacija repozitorijuma
+-----------
+Zatim je potrebno dodati fajlove u repozitorijum. Medjutim, postoji mala komplikacija.
+Neki fajlovi poput logova na primer menjaju se stalno ali nije potrebno voditi racuna o 
+njihovoj verziji. Da bi nesto iskljucili iz repozitorijuma potrebno je editovati fajl .gitignore.
+Nakon sto smo pripremili .gitignore listu dodajemo fajlove projekta u repozitorijum komandom:
+-----------
+git add .	<- dodavanje fajlova u lokalni repozitorijum
+-----------
+Ova komanda dodaje projektne fajlove u STAGING AREA, koja sadrzi PENDING promene naseg projekta;
+Da bi rekli GIT-u da sacuva promene, koristimo commit komandu:
+---------------------------------
+git commit -m "Initial commit"
+---------------------------------
+Bitno je primetiti da su commit-ovi Git-a lokalni, i da su snimljeni samo na lokalnu masinu. To je
+razlika u odnosu na ostale popularne open source sisteme koji uvek commit-uju na remote direktorijum.
+Git deli Subversion0style commit na dva logicka dela: lokalno belezenje promena (git commit) i
+push tih promena na remote repozitorijum (git push)
+
+-----------
+git log		<- komanda koja lista logove promena
+-----------
+Postoji vise open source i paid varijanti GitHub-ova na internetu. Koristicemo https://github.com/
+da bi cuvali nase projekte. Pre toga se logujemo na github i kreiramo repozitorijum sa imenom istim kao
+i ime aplikacije. Nakon kreiranja repozitorijuma, commit-ujemo fajlove na hub:
+------------------------------------------------------------------
+git remote add origin https://github.com/<username>/first_app.git
+git push -u origin master
+------------------------------------------------------------------
+
+Branch
+Branch predstavlja kopiju repozitorijuma. Na njemu se mogu vrsiti promene (eksperimentalne) bez bojazni da
+ce biti modifikovani osnovni fajlovi. U vecini slucajeva je parent repozitorijum MASTER branch, a novi TOPIC
+branch mozemo kreirati koriscenjem checkout komande sa flag-om -b:
+----------------------------------------
+git checkout -b modify-README
+Switched to a new branch 'modify-README'
+git branch
+master
+* modify-README
+----------------------------------------
+druga komanda (git branch) sluzi samo za listanje lokalnih brenceva, a asterisk (*) nam kazuje u kom branch-u
+smo trenutno.
+komanda: git checkout -b modify-README i kreira novi branch i switch-uje se na njega, kao sto je to prikazano
+asteriskom ispred modify-README branch-a.
+Master branch je izolovan od bilo kakvih promena na topic branch-u, i u slucaju da nesto debelo pogresimo 
+uvek mozemo napustiti promene i vratiti master branch i obrisati topic branch.
+
+Edit
+Nakon kreiranja topic branch-a, editovacemo ga da bi bio malo vise deskritivan. Ukoliko koristimo .md 
+ekstenziju, GitHub ce automatski uraditi formatiranje.
+
+Commit
+Kada smo napravili promene, mozemo pogledati statuc naseg branch-a komandom:
+--------------
+git status
+--------------
+U ovom trenutku mozemo koristiti git add . da bi uradili commit promena, ali Git obezbedjuje -a flag kao 
+shortcut za uobicajenu komandu komitovanja promena postojecih fajlova (ili fajlova kreiranih komandom git mv)
+------------------------------------------
+git commit -a -m "Improve the README file"
+------------------------------------------
+Moramo biti oprezni prilikom koriscenja -a flag-a. ako smo dodali neki novi fajl u projekat od poslednjeg
+commit-a, i dalje moramo da kazemo Git-u da novi fajlovi postoje koriscenjem git add prvo.
+
+Merge
+posto smo odradili promene, spremni smo da spojimo (merge) rezultate nazad na master branch.
+-----------------------
+git checkout master
+git merge modify-README
+-----------------------
+Posto smo spojili promene, opciono mozemo obrisati topic branch koriscenjem git branch -d komande:
+
+---------------------------
+git branch -d modify-README
+---------------------------
+Za razliku od -d flag-a, flag -D ce obrisati branch cak iako nismo merge-ovali promene.
+
+Push
+Posto smo update-ovali README mozemo gurnuti promene na GitHub da bi videli rezultat. Posto smo vec uradili
+jedan push, mozemo koristiti git push:
+--------------------
+git push
+--------------------
